@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import type { CSSProperties } from 'react'
 import { notFound } from 'next/navigation'
-import { ArrowLeft, Bookmark, Building2, Camera, CheckCircle2, Download, ExternalLink, FileText, Globe2, Mail, MapPin, MessageCircle, Phone, Tag, UserRound } from 'lucide-react'
+import { ArrowLeft, Bookmark, Building2, Camera, CheckCircle2, Download, ExternalLink, FileText, Globe2, Heart, Mail, MapPin, MessageCircle, Navigation, Phone, Share2, Star, Tag, UserRound } from 'lucide-react'
 import { buildPostMetadata, buildTaskMetadata } from '@/lib/seo'
 import { buildPostUrl, fetchArticleComments, fetchTaskPostBySlug, fetchTaskPosts } from '@/lib/task-data'
 import { getTaskConfig, SITE_CONFIG, type TaskKey } from '@/lib/site-config'
 import type { SitePost } from '@/lib/site-connector'
 import { EditableSiteShell } from '@/editable/shell/EditableSiteShell'
 import { getVisualPreset, visualSystem } from '@/editable/theme/visual-system'
+import { globalContent } from '@/editable/content/global.content'
 
 export const revalidate = 3
 
@@ -106,7 +107,7 @@ const mapSrcFor = (post: SitePost) => {
 
 export function TaskDetailView({ task, post, related, comments = [] }: { task: TaskKey; post: SitePost; related: SitePost[]; comments?: Array<{ id: string; name: string; comment: string; createdAt: string }> }) {
   const preset = getVisualPreset(visualSystem.recommendedPreset as any)
-  const detailVars = { '--detail-bg': preset.colors.background, '--detail-text': preset.colors.foreground, '--detail-surface': preset.colors.surface, '--detail-accent': preset.colors.accent } as CSSProperties
+  const detailVars = { '--detail-bg': '#f4f7fb', '--detail-text': '#111827', '--detail-surface': '#ffffff', '--detail-accent': '#2563eb', '--editable-container': '1120px' } as CSSProperties
 
   return (
     <EditableSiteShell>
@@ -158,27 +159,69 @@ function ListingDetail({ post, related }: { post: SitePost; related: SitePost[] 
   const website = getField(post, ['website', 'url'])
   const mapSrc = mapSrcFor(post)
   return (
-    <section className="mx-auto max-w-[var(--editable-container)] px-4 py-10 sm:px-6 lg:px-8 lg:py-16">
-      <BackLink task="listing" />
-      <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
-        <article className="rounded-[2.8rem] border border-[var(--editable-border)] bg-white p-6 shadow-[0_30px_90px_rgba(15,23,42,0.09)] sm:p-9">
-          <div className="grid gap-6 sm:grid-cols-[150px_1fr]">
-            <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-[2rem] bg-[var(--detail-bg)] ring-1 ring-[var(--editable-border)]">
-              {logo ? <img src={logo} alt="" className="h-full w-full object-cover" /> : <Building2 className="h-14 w-14 opacity-40" />}
+    <section className="mx-auto max-w-[var(--editable-container)] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <div className="mb-5"><BackLink task="listing" /></div>
+      <div className="rounded-2xl bg-[linear-gradient(90deg,#eef8ff,#fffaf0,#f8efff)] p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-8">
+       
+        <div className="flex flex-wrap justify-between gap-5">
+          <div className="grid gap-5 sm:grid-cols-[118px_1fr]">
+            <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl bg-[#eef4fb] ring-1 ring-[var(--editable-border)]">
+              {logo ? <img src={logo} alt="" className="h-full w-full object-cover" /> : <Building2 className="h-12 w-12 opacity-40" />}
             </div>
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--detail-accent)]">Business listing</p>
-              <h1 className="mt-3 text-4xl font-black leading-[0.98] tracking-[-0.07em] sm:text-6xl">{post.title}</h1>
-              <p className="mt-5 max-w-3xl text-base leading-8 opacity-70">{summaryText(post)}</p>
+              <div className="flex flex-wrap items-center gap-2">
+                <p className="text-sm font-black text-[#005cad]">{categoryOf(post, 'Business')}</p>
+                <span className="text-slate-300">•</span>
+                <p className="text-sm font-bold text-slate-600">{address || 'Local business'}</p>
+              </div>
+              <h1 className="mt-2 max-w-3xl text-3xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-4xl">{post.title}</h1>
+              <div className="mt-3 flex flex-wrap items-center gap-3">
+                
+              </div>
+           
+              <div className="mt-5 flex flex-wrap gap-3">
+                {phone ? <a href={`tel:${phone}`} className="rounded-full bg-[#2563eb] px-5 py-3 text-sm font-black text-white">Call business</a> : null}
+                {website ? <a href={externalUrl(website)} target="_blank" rel="noreferrer" className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-black text-slate-900">Visit website</a> : null}
+                <Link href="/contact" className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-black text-slate-900">Claim listing</Link>
+              </div>
             </div>
           </div>
-          <InfoGrid items={[['Location', address, MapPin], ['Phone', phone, Phone], ['Email', email, Mail], ['Website', website, Globe2]]} />
-          <BodyContent post={post} />
+          <div className="flex gap-2">
+
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_365px]">
+        <article className="space-y-5">
+          <section id="review" className="rounded-2xl bg-white p-6 shadow-sm">
+            <div className="rounded-2xl bg-[linear-gradient(90deg,#eef8ff,#fffaf0,#f8efff)] p-7 text-center">
+              <h2 className="text-xl font-black tracking-[-0.03em]"> {post.title}</h2>
+            </div>
+          </section>
+
+          <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black tracking-[-0.04em]">Business overview</h2>
+            <BodyContent post={post} compact />
+          </section>
+
+          <section className="rounded-2xl bg-white p-6 shadow-sm">
+            <h2 className="text-2xl font-black tracking-[-0.04em]">Location details</h2>
+            {mapSrc ? <MapBox src={mapSrc} label={address || post.title} /> : null}
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="text-xl font-black">{post.title}</h3>
+                {address ? <p className="mt-1 text-sm font-bold text-slate-600">{address}</p> : null}
+              </div>
+              {address ? <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full border border-slate-300 px-4 py-2 text-sm font-black">Get directions <Navigation className="h-4 w-4" /></a> : null}
+            </div>
+          </section>
+
           <ImageStrip images={images.slice(1)} label="Business showcase" />
         </article>
         <aside className="space-y-5">
-          {mapSrc ? <MapBox src={mapSrc} label={address || post.title} /> : <ContactAction website={website} phone={phone} email={email} />}
-          {mapSrc ? <ContactAction website={website} phone={phone} email={email} /> : null}
+          <InfoPanel address={address} phone={phone} email={email} website={website} />
+          <ContactAction website={website} phone={phone} email={email} />
           <RelatedPanel task="listing" post={post} related={related} compact />
         </aside>
       </div>
@@ -336,6 +379,33 @@ function InfoGrid({ items }: { items: Array<[string, string, typeof MapPin]> }) 
   )
 }
 
+function InfoPanel({ address, phone, email, website }: { address?: string; phone?: string; email?: string; website?: string }) {
+  const items = [
+    { icon: MapPin, value: address },
+    { icon: Phone, value: phone, href: phone ? `tel:${phone}` : '' },
+    { icon: Mail, value: email, href: email ? `mailto:${email}` : '' },
+    { icon: Globe2, value: website, href: website ? externalUrl(website) : '' },
+  ].filter((item) => item.value)
+  return (
+    <div className="rounded-2xl border border-[var(--editable-border)] bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+      <h2 className="text-2xl font-black tracking-[-0.04em]">Information</h2>
+      <div className="mt-4 divide-y divide-slate-200">
+        {items.map((item, index) => (
+          <div key={`${item.value}-${index}`} className="flex gap-3 py-4 text-sm font-bold text-slate-700">
+            <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-slate-500" />
+            {item.href ? <a href={item.href} target={item.href.startsWith('http') ? '_blank' : undefined} rel={item.href.startsWith('http') ? 'noreferrer' : undefined} className="break-all hover:text-[#2563eb]">{item.value}</a> : <span>{item.value}</span>}
+          </div>
+        ))}
+        <Link href="/contact" className="flex gap-3 py-4 text-sm font-bold text-slate-500 underline"><WrenchIcon /> Improve this listing</Link>
+      </div>
+    </div>
+  )
+}
+
+function WrenchIcon() {
+  return <span className="mt-0.5 inline-block h-4 w-4 shrink-0 text-center text-xs">+</span>
+}
+
 function ImageStrip({ images, label, large = false }: { images: string[]; label: string; large?: boolean }) {
   if (!images.length) return null
   return (
@@ -350,11 +420,14 @@ function ImageStrip({ images, label, large = false }: { images: string[]; label:
 
 function MapBox({ src, label }: { src: string; label: string }) {
   return (
-    <div className="overflow-hidden rounded-[2rem] border border-[var(--editable-border)] bg-white shadow-sm">
-      <div className="flex items-center gap-2 p-4 text-sm font-black"><MapPin className="h-4 w-4" /> {label || 'Map location'}</div>
-      <iframe src={src} title="Map" loading="lazy" className="h-80 w-full border-0" />
+    <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--editable-border)] bg-white">
+      <iframe src={src} title={label || 'Map location'} loading="lazy" className="h-80 w-full border-0" />
     </div>
   )
+}
+
+function externalUrl(value: string) {
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`
 }
 
 function ContactAction({ website, phone, email }: { website?: string; phone?: string; email?: string }) {
@@ -363,7 +436,7 @@ function ContactAction({ website, phone, email }: { website?: string; phone?: st
     <div className="mt-5 rounded-[2rem] border border-[var(--editable-border)] bg-white p-5 shadow-sm">
       <p className="text-xs font-black uppercase tracking-[0.22em] opacity-55">Quick actions</p>
       <div className="mt-4 flex flex-wrap gap-3">
-        {website ? <Link href={website} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[var(--detail-text)] px-4 py-2 text-sm font-black text-[var(--detail-bg)]">Website <ExternalLink className="h-4 w-4" /></Link> : null}
+        {website ? <a href={externalUrl(website)} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 rounded-full bg-[#2563eb] px-4 py-2 text-sm font-black text-white">Website <ExternalLink className="h-4 w-4" /></a> : null}
         {phone ? <a href={`tel:${phone}`} className="inline-flex items-center gap-2 rounded-full border border-[var(--editable-border)] px-4 py-2 text-sm font-black"><Phone className="h-4 w-4" /> Call</a> : null}
         {email ? <a href={`mailto:${email}`} className="inline-flex items-center gap-2 rounded-full border border-[var(--editable-border)] px-4 py-2 text-sm font-black"><Mail className="h-4 w-4" /> Email</a> : null}
       </div>
@@ -384,8 +457,7 @@ function RelatedPanel({ task, post, related, compact = false }: { task: TaskKey;
           <p className="text-xs font-black uppercase tracking-[0.22em] opacity-55">About this post</p>
           <div className="mt-4 grid gap-3 text-sm font-bold opacity-75">
             <p className="inline-flex items-center gap-2"><Tag className="h-4 w-4" /> Task: {taskConfig?.label || task}</p>
-            <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Site: {SITE_CONFIG.name}</p>
-            {post.publishedAt ? <p>Published: {new Date(post.publishedAt).toLocaleDateString()}</p> : null}
+            <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-4 w-4" /> Site: {globalContent.site.name}</p>
           </div>
         </div>
       ) : null}
