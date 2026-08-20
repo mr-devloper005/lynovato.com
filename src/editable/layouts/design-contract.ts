@@ -18,6 +18,8 @@ export const editableRootStyle = {
   '--slot4-lavender': '#eef4ff',
   '--slot4-gray': '#f6f8fb',
   '--slot4-body-gradient': 'linear-gradient(180deg, #f8fbff 0%, #f4f7fb 52%, #eef4fb 100%)',
+  '--editable-container': '1120px',
+  '--editable-border': 'rgba(17, 24, 39, 0.10)',
 } as CSSProperties
 
 export const editablePalette = {
